@@ -1,0 +1,290 @@
+{
+  "name": "zovo-rtf-viewer",
+  "displayName": "RTF Viewer & Rich Text Viewer (RTF Preview, Dark Mode)",
+  "description": "Free RTF viewer for VS Code. Open .rtf files as a read-only page with tables, pictures, search, outline, zoom and dark mode. No sign-in, works offline, sends nothing anywhere.",
+  "version": "0.1.0",
+  "publisher": "zovo",
+  "license": "MIT",
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#1E2A3A",
+    "theme": "dark"
+  },
+  "homepage": "https://github.com/theluckystrike/rtf-viewer-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/theluckystrike/rtf-viewer-vscode/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/rtf-viewer-vscode"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "rtf",
+    "rtf viewer",
+    "rich text",
+    "rtf preview",
+    "rtf reader",
+    "wordpad",
+    "textedit",
+    "document viewer",
+    "dark mode",
+    "offline",
+    "rich text format",
+    "clinical tables",
+    "tfl"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onCustomEditor:rtfViewer.preview"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "rtfViewer.preview",
+        "displayName": "RTF Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.rtf"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "rtfViewer.find",
+        "title": "Find in Document",
+        "category": "RTF Viewer",
+        "icon": "$(search)"
+      },
+      {
+        "command": "rtfViewer.openAsText",
+        "title": "Open as Text",
+        "category": "RTF Viewer",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "rtfViewer.openPreview",
+        "title": "Open in RTF Viewer",
+        "category": "RTF Viewer",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "rtfViewer.copyText",
+        "title": "Copy All Text",
+        "category": "RTF Viewer",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "rtfViewer.exportHtml",
+        "title": "Export as HTML...",
+        "category": "RTF Viewer",
+        "icon": "$(export)"
+      },
+      {
+        "command": "rtfViewer.openSample",
+        "title": "Open Sample Document",
+        "category": "RTF Viewer"
+      },
+      {
+        "command": "rtfViewer.openWalkthrough",
+        "title": "Get Started",
+        "category": "RTF Viewer"
+      },
+      {
+        "command": "rtfViewer.supportDeveloper",
+        "title": "Support the developer",
+        "category": "RTF Viewer"
+      },
+      {
+        "command": "rtfViewer.moreViewers",
+        "title": "More free viewers",
+        "category": "RTF Viewer"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "rtfViewer.find",
+        "key": "ctrl+f",
+        "mac": "cmd+f",
+        "when": "activeCustomEditorId == 'rtfViewer.preview'"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "rtfViewer.openAsText",
+          "when": "activeCustomEditorId == 'rtfViewer.preview'",
+          "group": "navigation@1"
+        },
+        {
+          "command": "rtfViewer.openPreview",
+          "when": "resourceExtname == .rtf && !activeCustomEditorId",
+          "group": "navigation@1"
+        },
+        {
+          "command": "rtfViewer.copyText",
+          "when": "activeCustomEditorId == 'rtfViewer.preview'",
+          "group": "1_rtf@1"
+        },
+        {
+          "command": "rtfViewer.exportHtml",
+          "when": "activeCustomEditorId == 'rtfViewer.preview'",
+          "group": "1_rtf@2"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "rtfViewer.openAsText",
+          "when": "resourceExtname == .rtf",
+          "group": "navigation@20"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "rtfViewer.find",
+          "when": "activeCustomEditorId == 'rtfViewer.preview'"
+        },
+        {
+          "command": "rtfViewer.copyText",
+          "when": "activeCustomEditorId == 'rtfViewer.preview'"
+        },
+        {
+          "command": "rtfViewer.exportHtml",
+          "when": "activeCustomEditorId == 'rtfViewer.preview'"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "RTF Viewer",
+      "properties": {
+        "rtfViewer.theme": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "light",
+            "dark",
+            "invert"
+          ],
+          "enumDescriptions": [
+            "Follow the VS Code color theme: Dark in dark themes, Light in light themes",
+            "White paper with the document's own colors",
+            "Dark page with light text; colored text keeps its color",
+            "Paper with all colors inverted (pictures keep their colors)"
+          ],
+          "default": "auto",
+          "description": "Page colors. The Page button in the toolbar changes it for all files."
+        },
+        "rtfViewer.view": {
+          "type": "string",
+          "enum": [
+            "page",
+            "flow"
+          ],
+          "enumDescriptions": [
+            "Pages with the width and margins of the document",
+            "Text that follows the width of the editor"
+          ],
+          "default": "page",
+          "description": "How the document is laid out."
+        },
+        "rtfViewer.zoom": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0.3,
+          "maximum": 4,
+          "description": "Zoom from 0.3 (30%) to 4 (400%). Ctrl+= and Ctrl+- (Cmd on macOS) change it in the viewer."
+        },
+        "rtfViewer.maxFileSizeMB": {
+          "type": "number",
+          "default": 200,
+          "minimum": 1,
+          "description": "Files larger than this ask before they open."
+        },
+        "rtfViewer.maxImageSizeMB": {
+          "type": "number",
+          "default": 20,
+          "minimum": 0.1,
+          "description": "Pictures larger than this are shown as a labelled box."
+        },
+        "rtfViewer.liveReload": {
+          "type": "boolean",
+          "default": true,
+          "description": "Reload the view when the file changes on disk (for example when R or SAS writes the table again)."
+        },
+        "rtfViewer.askForRating": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask for a Marketplace rating after files opened without an error in 2 sessions at least 4 hours apart. It asks at most 2 times and never after an error. Nothing is sent anywhere."
+        },
+        "rtfViewer.showSupportLinks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the small Sponsor and More free viewers links at the bottom of the viewer. Nothing is sent anywhere."
+        }
+      }
+    },
+    "walkthroughs": [
+      {
+        "id": "rtfViewer.start",
+        "title": "Get started with RTF Viewer",
+        "description": "Read RTF files inside VS Code, search them and export them as HTML.",
+        "steps": [
+          {
+            "id": "open",
+            "title": "Open an RTF file",
+            "description": "Click any .rtf file in the Explorer. It opens as a read-only page. The Open as Text button shows the RTF source.\n[Open the sample document](command:rtfViewer.openSample)",
+            "media": {
+              "markdown": "walkthrough/open.md"
+            },
+            "completionEvents": [
+              "onCommand:rtfViewer.openSample"
+            ]
+          },
+          {
+            "id": "search",
+            "title": "Search and jump",
+            "description": "Press Ctrl+F (Cmd+F on macOS) to search. Enter goes to the next match, Shift+Enter to the previous one. The Outline button lists the headings.\n[Find in document](command:rtfViewer.find)",
+            "media": {
+              "markdown": "walkthrough/search.md"
+            },
+            "completionEvents": [
+              "onCommand:rtfViewer.find"
+            ]
+          },
+          {
+            "id": "export",
+            "title": "Copy or export",
+            "description": "Copy all text, or save the document as one HTML file with its pictures inside.\n[Export as HTML](command:rtfViewer.exportHtml)",
+            "media": {
+              "markdown": "walkthrough/export.md"
+            },
+            "completionEvents": [
+              "onCommand:rtfViewer.exportHtml",
+              "onCommand:rtfViewer.copyText"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/theluckystrike"
+  }
+}
