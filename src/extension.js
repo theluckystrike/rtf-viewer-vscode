@@ -47,6 +47,8 @@ class RtfEditor {
     } catch (_) { /* no watcher on this file system */ }
   }
   post(m) { if (!this.disposed) return this.panel.webview.postMessage(Object.assign({ gen: this.gen }, m)); }
+  /** A file that could not be read (or was too large to open) records a failure for the rating rule, once (VER11). */
+  failed() { if (!this.counted) { this.counted = true; rating.failure(); } }
   async load(reload) {
     const gen = ++this.gen;
     if (this.worker) { this.worker.terminate(); this.worker = null; }
@@ -54,16 +56,17 @@ class RtfEditor {
     try { size = (await vscode.workspace.fs.stat(this.uri)).size; } catch (e) {
       this.post({ type: 'start', size: 0, name: path.posix.basename(this.uri.path) });
       this.post({ type: 'error', title: 'The file could not be read', detail: String(e.message || e) });
+      this.failed();
       return;
     }
     if (gen !== this.gen) return;
     const maxMB = cfg().get('maxFileSizeMB', 200);
-    if (size > maxMB * 1048576 && !this.allowLarge) { this.post({ type: 'tooLarge', size, maxMB, name: path.posix.basename(this.uri.path) }); return; }
+    if (size > maxMB * 1048576 && !this.allowLarge) { this.post({ type: 'tooLarge', size, maxMB, name: path.posix.basename(this.uri.path) }); this.failed(); return; }
     this.post({ type: 'start', size, reload: !!reload, name: path.posix.basename(this.uri.path) });
     const data = { maxImageBytes: Math.round(cfg().get('maxImageSizeMB', 20) * 1048576) };
     if (this.uri.scheme === 'file') data.path = this.uri.fsPath;
     else {
-      try { data.bytes = await vscode.workspace.fs.readFile(this.uri); } catch (e) { this.post({ type: 'error', title: 'The file could not be read', detail: String(e.message || e) }); return; }
+      try { data.bytes = await vscode.workspace.fs.readFile(this.uri); } catch (e) { this.post({ type: 'error', title: 'The file could not be read', detail: String(e.message || e) }); this.failed(); return; }
       if (gen !== this.gen) return;
     }
     const w = new Worker(path.join(__dirname, 'worker.js'), { workerData: data, resourceLimits: { maxOldGenerationSizeMb: 2048 } });

@@ -162,3 +162,11 @@ test('copy text, Open as Text and saved preferences', async () => {
   await ed.send({ type: 'prefs', prefs: { theme: 'invert', zoom: 1.5 } });
   assert.deepEqual(ed.ctx.globalState.get('rtfViewer.prefs'), { theme: 'invert', zoom: 1.5 });
 });
+
+test('rating: a file that cannot be read or is too large records a failure (VER11)', () => {
+  const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'extension.js'), 'utf8');
+  const parts = src.split("title: 'The file could not be read'").slice(1);
+  assert.equal(parts.length, 2);
+  for (const p of parts) assert.ok(p.slice(0, 160).includes('this.failed()'), p.slice(0, 160));
+  assert.match(src, /type: 'tooLarge'[^\n]*this\.failed\(\); return; \}/);
+});
